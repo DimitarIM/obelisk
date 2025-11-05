@@ -1,5 +1,9 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import gsap from 'gsap'
+import * as lil from 'lil-gui';
+
+const gui = new lil.GUI();
 
 /**
  * Base
@@ -16,7 +20,26 @@ const scene = new THREE.Scene()
 const geometry = new THREE.BoxGeometry(1, 1, 1)
 const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
+
+const params = {
+    spin: () => {
+        gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + Math.PI * 2})
+    }
+}
 scene.add(mesh)
+
+gui.add(mesh.position, 'x').min(-3).max(3).step(0.01).name('cube sideways');
+gui.add(mesh.position, 'y').min(-3).max(3).step(0.01).name('cube elevation');
+gui.add(mesh.position, 'z').min(-3).max(3).step(0.01).name('cube depth');
+
+gui.add(mesh, 'visible').name('cube visibility');
+
+gui.add(material, 'wireframe').name('cube wireframe');
+
+gui.addColor(material, 'color').name('cube color');
+
+gui.add(params, 'spin')
+
 
 /**
  * Sizes
@@ -26,15 +49,19 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () => {
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
 
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
 
-    renderer.setSize(sizes.width, sizes.height);
-
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
 /**
@@ -55,14 +82,16 @@ controls.enableDamping = true
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
-renderer.setSize(sizes.width, sizes.height);
+renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
  * Animate
  */
 const clock = new THREE.Clock()
 
-const tick = () => {
+const tick = () =>
+{
     const elapsedTime = clock.getElapsedTime()
 
     // Update controls
